@@ -25,21 +25,17 @@ def cost(theta, X, y, lambda_):
     used can only do minimization you will have to slightly adapt equations from
     the lectures.
     """
-    """
-    SAMO KA MAS ZAJ MINIMIZE
-    TO POMENI KA BOS DAL - PRED SUM
-    PA NA KONCI DELIL S STEVILON PRIMEROV
-    """
 
-    return 0.
+    return -sum([yi*math.log(h(xi, theta)) + (1-yi)*math.log(1-h(xi, theta)) for xi, yi in zip(X, y)]) / len(X)
 
 def grad(theta, X, y, lambda_):
     """
     The gradient of the cost function. Return a numpy vector of the same
     size at theta.
     """
-    # ... your code
-    return None
+    Xt = X.transpose()
+    return numpy.array(
+        [-sum((y - h(Xt, theta))*Xt[i])/len(X) for i in range(len(theta))])
 
 class LogRegClassifier(object):
 
