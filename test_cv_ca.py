@@ -1,7 +1,7 @@
 import unittest
 
 # To import your solution modify the next row:
-from solution import *
+from homework4 import *
 
 class DummyCVLearner:
     """ For CV testing """

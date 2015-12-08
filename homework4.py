@@ -1,5 +1,6 @@
 import numpy
 from scipy.optimize import fmin_l_bfgs_b
+import math
 
 def load(name):
     """
@@ -15,8 +16,8 @@ def h(x, theta):
     Predict the probability for class 1 for the current instance
     and a vector theta.
     """
-    # ... your code
-    return 0.
+    # z = sum([ti * xi for xi, ti in zip(x, theta)])
+    return 1 / (1 + math.e ** -sum([ti * xi for xi, ti in zip(x, theta)]))
 
 def cost(theta, X, y, lambda_):
     """
@@ -24,7 +25,12 @@ def cost(theta, X, y, lambda_):
     used can only do minimization you will have to slightly adapt equations from
     the lectures.
     """
-    # ... your code
+    """
+    SAMO KA MAS ZAJ MINIMIZE
+    TO POMENI KA BOS DAL - PRED SUM
+    PA NA KONCI DELIL S STEVILON PRIMEROV
+    """
+
     return 0.
 
 def grad(theta, X, y, lambda_):
