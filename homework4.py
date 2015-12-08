@@ -25,8 +25,8 @@ def cost(theta, X, y, lambda_):
     used can only do minimization you will have to slightly adapt equations from
     the lectures.
     """
-
-    return -sum([yi*math.log(h(xi, theta)) + (1-yi)*math.log(1-h(xi, theta)) for xi, yi in zip(X, y)]) / len(X)
+    # return -sum([yi*math.log(h(xi, theta)) + (1-yi)*math.log(1-h(xi, theta)) for xi, yi in zip(X, y)]) / len(X)
+    return -sum(numpy.log(numpy.where(y, h(X.transpose(), theta), 1-h(X.transpose(), theta)))) / X.shape[0]
 
 def grad(theta, X, y, lambda_):
     """
