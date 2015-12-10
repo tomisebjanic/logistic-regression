@@ -36,7 +36,7 @@ def draw_decision(X, y, classifier, at1, at2, grid=50):
 
     pylab.show()
 
-X,y = load('data/reg.data')
+X,y = load('reg.data')
 
 learner = LogRegLearner(lambda_=0.)
 classifier = learner(X,y)

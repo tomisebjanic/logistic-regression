@@ -15,27 +15,51 @@ def h(x, theta):
     """
     Predict the probability for class 1 for the current instance
     and a vector theta.
+
+    hipoteza
     """
     # z = sum([ti * xi for xi, ti in zip(x, theta)])
-    return 1 / (1 + math.e ** -sum([ti * xi for xi, ti in zip(x, theta)]))
+    return 1 / (1 + numpy.e ** -sum([ti * xi for xi, ti in zip(x, theta)]))
 
 def cost(theta, X, y, lambda_):
     """
     Return the value of the cost function. Because the optimization algorithm
     used can only do minimization you will have to slightly adapt equations from
     the lectures.
+
+    cenilna/kriterijska funkcija
+    theta = parameri
+    lambda = stopnja regularizacije
     """
-    # return -sum([yi*math.log(h(xi, theta)) + (1-yi)*math.log(1-h(xi, theta)) for xi, yi in zip(X, y)]) / len(X)
-    return -sum(numpy.log(numpy.where(y, h(X.transpose(), theta), 1-h(X.transpose(), theta)))) / X.shape[0]
+    return (-sum([yi*numpy.log(h(xi, theta)) + (1-yi)*numpy.log(1-h(xi, theta)) for xi, yi in zip(X, y)])
+            + (lambda_/2*X.shape[0]) * sum([ti**2 for ti in theta]))/ X.shape[0]
+
+    # return (-sum(numpy.log(numpy.where(y, h(X.transpose(), theta), 1-h(X.transpose(), theta))))\
+    #        + (lambda_/X.shape[0]) * sum([ti**2 for ti in theta]))/ X.shape[0]
 
 def grad(theta, X, y, lambda_):
     """
     The gradient of the cost function. Return a numpy vector of the same
     size at theta.
+
+    odvod kriterijske funkcije
+
+    sestej prvi vektor + regularicacija vektor
     """
     Xt = X.transpose()
-    return numpy.array(
-        [-sum((y - h(Xt, theta))*Xt[i])/len(X) for i in range(len(theta))])
+    j = numpy.array([(-sum((y - h(Xt, theta))*Xt[i]) )/X.shape[0] for i in range(len(theta))])
+    regularization = numpy.array([2*ti for ti in theta]) * (4*lambda_/X.shape[0])
+    res = j + regularization
+    # regularization = numpy.array([ti**2 for ti in theta]) * (lambda_/2*X.shape[0])
+    # res = j - regularization
+    return res
+    # return numpy.array(
+    #     [ (-sum((y - h(Xt, theta))*Xt[i]) )/X.shape[0] for i in range(len(theta))]
+    # )
+    # return numpy.array(
+    #     [ (-sum((y - h(Xt, theta))*Xt[i]))/X.shape[0] for i in range(len(theta))]
+    #     + (lambda_/X.shape[0])*sum([2*ti for ti in theta])
+    # )
 
 class LogRegClassifier(object):
 
@@ -83,3 +107,9 @@ if __name__ == "__main__":
     prediction = classifier(X[0]) # prediction for the first training example
     print(prediction)
 
+"""
+nobena regularizacija
+zelo mocna regularizacija
+
+ce delis s stevilon primerov je lambda na [0, 1]
+"""
