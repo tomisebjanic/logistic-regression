@@ -60,7 +60,7 @@ class TestLogisticRegression(unittest.TestCase):
         if len(set(signatures)) != len(y):
             raise NotAllTested()
     
-        if signatures != map(lambda x: sum(list(x)), X):
+        if signatures != list(map(lambda x: sum(list(x)), X)):
             raise MixedOrder()
 
 if __name__ == '__main__':

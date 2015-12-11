@@ -1,6 +1,5 @@
 import numpy
 from scipy.optimize import fmin_l_bfgs_b
-import math
 
 def load(name):
     """
@@ -60,6 +59,46 @@ def grad(theta, X, y, lambda_):
     #     [ (-sum((y - h(Xt, theta))*Xt[i]))/X.shape[0] for i in range(len(theta))]
     #     + (lambda_/X.shape[0])*sum([2*ti for ti in theta])
     # )
+
+def CA(real, predictions):
+    """
+    CA = (TP + TN) / m
+
+    [1, 0]
+    [verjetnost ka je 0, verjetnost ka je 1]
+    """
+    tp, tn = 0, 0
+    for i in range(len(predictions)):
+        if (predictions[i][0] > predictions[i][1]) and (predictions[i][0] >= 0.5 and real[i] == 0):
+            tn += 1
+        elif (predictions[i][0] < predictions[i][1]) and (predictions[i][1] >= 0.5 and real[i] == 1):
+            tp += 1
+
+    return (tp + tn) / len(real)
+
+def test_cv(learner, X, y, k=5):
+    """
+    razdeli X,y na k falatov
+    """
+    n = X.shape[0] / k
+    ix = 0
+    results = []
+    for i in range(k):
+        Xtest = X[ix:ix+n]
+        Xtrain = numpy.delete(X, list(range(int(ix), int(ix+n))), axis=0)
+        ytest = y[ix:ix+n]
+        ytrain = numpy.delete(y, list(range(int(ix), int(ix+n))))
+
+        c = learner(Xtrain, ytrain)
+        for x in Xtest:
+            results.append(c(x))
+        ix += n
+    return results
+
+def test_learning(learner, X, y):
+    c = learner(X,y)
+    results = [ c(x) for x in X ]
+    return results
 
 class LogRegClassifier(object):
 
