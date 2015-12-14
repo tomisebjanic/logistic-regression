@@ -53,7 +53,6 @@ def h(x, theta):
     Predict the probability for class 1 for the current instance
     and a vector theta.
     """
-    # return 1 / (1 + numpy.e ** -sum([ti * xi for xi, ti in zip(x, theta)]))
     return 1/ (1 + numpy.exp(-x.transpose().dot(theta)))
 
 
@@ -63,10 +62,8 @@ def cost(theta, X, y, lambda_):
     used can only do minimization you will have to slightly adapt equations from
     the lectures.
     """
-    # return (-sum([yi*numpy.log(h(xi, theta)) + (1-yi)*numpy.log(1-h(xi, theta)) for xi, yi in zip(X, y)])
-    #         + (lambda_/2*X.shape[0]) * sum([ti**2 for ti in theta]))/ X.shape[0]
     p = h(X.transpose(), theta)
-    reg = 4.0*lambda_*theta.dot(theta) # [ti**2 for ti in theta]
+    reg = (lambda_/2.0)* (theta.dot(theta))
     return (-numpy.log(numpy.where(y, p, 1-p)).sum() + reg)/X.shape[0]
 
 
@@ -75,15 +72,26 @@ def grad(theta, X, y, lambda_):
     The gradient of the cost function. Return a numpy vector of the same
     size at theta.
     """
-    # Xt = X.transpose()
-    # j = numpy.array([(-sum((y - h(Xt, theta))*Xt[i]) )/X.shape[0] for i in range(len(theta))])
-    # regularization = numpy.array([2*ti for ti in theta]) * (4*lambda_/X.shape[0])
-    # regularization = (theta*2.0) * (4.0*lambda_/X.shape[0])
-    # return j + regularization
     Xt = X.transpose()
     p = h(Xt, theta)
-    reg = (theta*2.0) * (4.0*lambda_/X.shape[0]) # [2*ti for ti in theta]
+    reg = lambda_/X.shape[0] * theta
     return -Xt.dot(y-p)/X.shape[0] + reg
+
+
+def find_lambda(X, y):
+    lambdas = [0, 0.0005, 0.0001, 0.005, 0.001, 0.002, 0.003, 0.004, 0.005, 0.006, 0.007, 0.008, 0.009, 0.05, 0.01,
+               0.02, 0.03, 0.04, 0.06, 0.07, 0.08, 0.09, 0.1, 0.5, 1., 5., 10., 50., 100., 1000.]
+    best_lambda, best_ca = -1, -1
+    for l in lambdas:
+        learner = LogRegLearner(lambda_=l)
+        a = test_cv(learner, X, y)
+        ca = CA(y, a)
+        print('===', 'Lambda:', l, 'CA:', ca, '===')
+        if ca > best_ca:
+            best_ca = ca
+            best_lambda = l
+
+    return best_lambda, best_ca
 
 
 def CA(real, predictions):
@@ -129,25 +137,21 @@ def part2():
     draw_decision(X, y, classifier, 0, 1)
 
 
+def part3():
+    print('Part 3')
+    X, y = load('reg.data')
+    best_lambda, best_ca = find_lambda(X, y)
+    print('Best CA:', best_ca, 'Best lambda:', best_lambda)
+
+
 def part4():
+    print('Part 4')
     X,y = load('GDS1059.data')
-    lambdas = [0, 0.0005, 0.005, 0.001, 0.002, 0.003, 0.004, 0.005, 0.006, 0.007, 0.008, 0.009, 0.05, 0.01, 0.02, 0.03,
-               0.04, 0.06, 0.07, 0.08, 0.09, 0.1, 0.5, 1., 5., 10., 50., 100., 1000.]
-    best_lambda, best_ca = -1, -1
-
-    for l in lambdas:
-        learner = LogRegLearner(lambda_=l)
-        a = test_cv(learner, X, y)
-        ca = CA(y, a)
-        if ca > best_ca:
-            best_ca = ca
-            best_lambda = l
-
-    print('Best CA:', best_ca)
-    print('Best lambda:', best_lambda)
+    best_lambda, best_ca = find_lambda(X, y)
+    print('Best CA:', best_ca, 'Best lambda:', best_lambda)
     learner = LogRegLearner(lambda_=best_lambda)
     classifier = learner(X, y)
-    draw_decision(X, y, classifier, 0, 20)
+    draw_decision(X, y, classifier, 50, 100)
 
 
 class LogRegClassifier(object):
@@ -186,16 +190,6 @@ class LogRegLearner(object):
 
 
 if __name__ == "__main__":
-    #
-    # Usage example
-    #
-
-    # X,y = load('reg.data')
-    # X, y = load('GDS1059.data')
-    # learner = LogRegLearner(lambda_=0.0)
-    # classifier = learner(X,y) # we get a model
-    #
-    # prediction = classifier(X[0]) # prediction for the first training example
-    # print(prediction)
     part2()
+    part3()
     part4()
